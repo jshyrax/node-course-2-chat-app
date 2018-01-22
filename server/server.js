@@ -20,6 +20,7 @@ io.on('connection', (socket) => {
    
 
     socket.on('createMessage', (newMsg) => {
+        newMsg['createdAt'] = new Date().getTime();
         console.log('New Message Created: ', newMsg);
         socket.emit('newMessage', newMsg);
     });
