@@ -1,8 +1,7 @@
 var socket = io();
             
 socket.on('connect', function() {
-    console.log('Connected to server');    
-    socket.emit('createMessage', {from: 'client', text:`${socket.id} >> I'm alive!!`});
+    console.log('Connected to server');        
 });
 
 socket.on('disconnect', function() {
