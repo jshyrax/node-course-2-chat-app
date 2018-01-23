@@ -23,9 +23,10 @@ io.on('connection', (socket) => {
     });
    
 
-    socket.on('createMessage', (newMsg) => { 
+    socket.on('createMessage', (newMsg, callback) => { 
         console.log('New Message Created: ', newMsg);
         io.emit('newMessage', generateMessage(newMsg.from, newMsg.text));
+        callback("have some cheese");
     });
 });
 
