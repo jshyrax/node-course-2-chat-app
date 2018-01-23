@@ -8,18 +8,20 @@ socket.on('disconnect', function() {
     console.log('Disconnected from server');
 });
 
-socket.on('newMessage', function(msg) {
-    console.log('New Message ', msg);
+socket.on('newMessage', function(message) {
+    var formattedTime = getFormattedTime(message.createdAt);
+    console.log('New Message ', message);
     var li = jQuery('<li></li>');
-    li.text(`${msg.from}: ${msg.text}`);
+    li.text(`${message.from} ${formattedTime}: ${message.text}`);
     jQuery('#messages').append(li);
 });
 
 socket.on('newLocationMessage', function(message) {    
+    var formattedTime = getFormattedTime(message.createdAt);
     var li = jQuery('<li></li>');
     var a = jQuery('<a target="_blank">My current location</a>');
 
-    li.text(`${message.from}: `);
+    li.text(`${message.from} ${formattedTime}: `);
     a.attr('href', message.url);
 
     li.append(a);
@@ -37,6 +39,10 @@ jQuery('#message-form').on('submit', function (e) {
         messageTextbox.val('');
     });
 });
+
+var getFormattedTime = function(timestamp){
+    return moment(timestamp).format('h:mm a');
+}
 
 var locationButton = jQuery('#send-location');
 locationButton.on('click', function (e) {
