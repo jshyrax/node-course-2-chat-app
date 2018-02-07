@@ -80,7 +80,7 @@ socket.on('newMessagePending', function(user){
     window.pendingMessages[user.user] = setTimeout( function() {        
         userLi.removeClass('active');
         window.pendingMessages[user.user] = null;
-    }, 3000);    
+    }, 1000);    
 
 });
 
