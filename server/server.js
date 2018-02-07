@@ -17,8 +17,6 @@ var users = new Users();
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
-    console.log('New user connected');
-
     socket.on('join', (params, callback) => {
         if (!isRealString(params.name) || !isRealString(params.room)){
             return callback('Name and room name or required.');
@@ -26,7 +24,9 @@ io.on('connection', (socket) => {
 
         socket.join(params.room);
         users.removeUser(socket.id);
-        users.addUser(socket.id, params.name, params.room);
+        if (!users.addUser(socket.id, params.name, params.room)){
+            callback(`The name ${params.name} already exists!`);
+        }
 
         io.to(params.room).emit('updateUserList', users.getUserList(params.room));        
 
@@ -43,6 +43,13 @@ io.on('connection', (socket) => {
 
         
         callback();
+    });
+
+    socket.on('createMessagePending', (message, callback) => {
+        var user = users.getUser(socket.id);
+        if(user){                        
+            socket.broadcast.to(user.room).emit('newMessagePending', {user: user.name});
+        }
     });
 
     socket.on('createLocationMessage', (coords) => {

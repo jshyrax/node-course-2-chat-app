@@ -9,7 +9,11 @@ class Users {
     }
 
     addUser (id, name, room){
-        var user = {id, name, room};
+        var users = this.users;
+        if (users.filter((user) => user.name.toLowerCase() === name.toLowerCase()).length > 0 ){
+            return;
+        }
+        var user = {id, name, room};        
         this.users.push(user);
         return user;
     }

@@ -17,13 +17,14 @@ function scrollToBottom() {
 };
 
 socket.on('connect', function() {
-    var params = jQuery.deparam(window.location.search);
+    var params = jQuery.deparam(window.location.search);    
     socket.emit('join', params, function (err) {
         if (err){
             alert(err);
             window.location.href = '/';
         } else {
             console.log('No error');
+            window.this_user = params.name;
         }
     });
 });
@@ -36,7 +37,7 @@ socket.on('updateUserList', function(users){
     var ol = jQuery('<ol></ol>');
 
     users.forEach(function (user) {
-        ol.append(jQuery('<li></li>').text(user));
+        ol.append(jQuery('<li id="'+user+'"></li>').text(user));
     });
 
     jQuery('#users').html(ol);
@@ -66,6 +67,23 @@ socket.on('newLocationMessage', function(message) {
     scrollToBottom();
 });
 
+socket.on('newMessagePending', function(user){    
+    if (user.user === window.this_user) return;    
+
+    var userLi = jQuery("li[id='"+user.user+"']");
+    userLi.addClass('active');
+
+    if (window.pendingMessages[user.user]){
+        clearTimeout(window.pendingMessages[user.user]);
+    }
+
+    window.pendingMessages[user.user] = setTimeout( function() {        
+        userLi.removeClass('active');
+        window.pendingMessages[user.user] = null;
+    }, 3000);    
+
+});
+
 jQuery('#message-form').on('submit', function (e) {
     e.preventDefault();
 
@@ -77,9 +95,16 @@ jQuery('#message-form').on('submit', function (e) {
     });
 });
 
+jQuery('#message').on('keyup', function (e) {
+    socket.emit('createMessagePending');
+});
+
+
 var getFormattedTime = function(timestamp){
     return moment(timestamp).format('h:mm a');
 }
+
+var pendingMessages = {};
 
 var locationButton = jQuery('#send-location');
 locationButton.on('click', function (e) {

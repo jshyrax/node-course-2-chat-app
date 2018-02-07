@@ -112,6 +112,11 @@
     padding: 10px;
     margin: 10px;
   }
+
+  .chat__sidebar .active{
+    color:#1F4C69;
+    font-weight: bold;
+  }
   
   .chat__main {
     display: flex;
